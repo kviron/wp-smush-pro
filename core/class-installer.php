@@ -36,6 +36,7 @@ class Installer {
 		}
 
 		Modules\CDN::unschedule_cron();
+		Settings::get_instance()->delete_setting( 'wp-smush-cdn_status' );
 
 		if ( is_multisite() && is_network_admin() ) {
 			/**
@@ -45,6 +46,8 @@ class Installer {
 			 */
 			update_site_option( 'wp-smush-networkwide', 1 );
 		}
+
+		delete_site_option( 'wp_smush_api_auth' );
 	}
 
 	/**
@@ -58,10 +61,6 @@ class Installer {
 		}
 
 		$version = get_site_option( 'wp-smush-version' );
-
-		if ( ! $version ) {
-			add_site_option( 'wp-smush-show-black-friday', true );
-		}
 
 		if ( ! class_exists( '\\Smush\\Core\\Settings' ) ) {
 			require_once __DIR__ . '/class-settings.php';
@@ -145,8 +144,8 @@ class Installer {
 				add_site_option( 'wp-smush-show_upgrade_modal', true );
 			}
 
-			if ( version_compare( $version, '3.9.2', '<' ) ) {
-				add_site_option( 'wp-smush-show-black-friday', true );
+			if ( version_compare( $version, '3.9.5', '<' ) ) {
+				delete_site_option( 'wp-smush-show-black-friday' );
 			}
 
 			// Create/upgrade directory smush table.
